@@ -15,7 +15,7 @@ end
 function ENT:PostDraw()
     if not self:GetEngineActive() then return end
 
-    local Opacity = math.Clamp(120 + self:GetThrottle() * 100 + self:GetBoost() * 10, 0, 255)
+    local Opacity = math.Clamp(120 + self:GetThrottle() * 100 + self:GetBoost() * 4, 0, 255)
 
     cam.Start3D2D( self:LocalToWorld( Vector( -613.53,239.71,58.69 ) ), self:LocalToWorldAngles( Angle( -90, 0, 0 ) ), 1)
         draw.NoTexture()

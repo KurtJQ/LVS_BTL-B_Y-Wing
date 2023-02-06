@@ -65,7 +65,7 @@ function ENT:InitWeapons()
 		local startpos = pod:LocalToWorld( pod:OBBCenter() )
 		local trace = util.TraceHull( {
 			start = startpos,
-			endpos = (startpos + ent:GetForward() * 50000),
+			endpos = startpos + ent:GetForward() * 50000,
 			mins = Vector( -10, -10, -10 ),
 			maxs = Vector( 10, 10, 10 ),
 			filter = ent:GetCrosshairFilterEnts()
@@ -118,13 +118,13 @@ function ENT:InitWeapons()
 
 		local T = CurTime()
 
-		if(ent._nextMissle or 0) > T then return end
+		if (ent._nextMissle or 0) > T then return end
 
 		ent._nextMIssle = T + 0.5
 
 		ent._swapMissile = not ent._swapMissile
 		
-		local Pos = Vector( 535, (ent._swapMissile and -22.81 or 22.81), 46.04)
+		local Pos = Vector( 535, ent._swapMissile and -22.81 or 22.81, 46.04)
 
 		local Driver = self:GetDriver()
 
