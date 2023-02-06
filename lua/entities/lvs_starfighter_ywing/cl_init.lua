@@ -3,8 +3,8 @@ include("shared.lua")
 ENT.EngineColor = Color( 255, 0, 0 , 255)
 ENT.EngineGlow = Material( "sprites/light_glow02_add" )
 ENT.EnginePos = {
-    Vector( -650,239.81,58.68 ),
-    Vector( -650,-239.81,58.68 )
+    Vector( -633.16,239.81,58.68 ),
+    Vector( -633.16,-239.81,58.68 )
 }
 
 function ENT:OnSpawn()
@@ -15,10 +15,18 @@ end
 function ENT:PostDraw()
     if not self:GetEngineActive() then return end
 
-    cam.Start3D2D( self:LocalToWorld( Vector( 0, 0, 0 ) ), self:LocalToWorldAngles( Angle( 0, 0, 0 ) ), 1)
+    local Opacity = math.Clamp(120 + self:GetThrottle() * 150 + self:GetBoost() * 10, 0, 255)
+
+    cam.Start3D2D( self:LocalToWorld( Vector( -613.53,239.71,58.69 ) ), self:LocalToWorldAngles( Angle( -90, 0, 0 ) ), 1)
         draw.NoTexture()
-        surface.SetDrawColor( 255, 255 , 255 , 255)
-        surface.DrawTexturedRectRotated(-650, 239.81, 58.68, 6, 6, 6)
+        surface.SetDrawColor( 255, 255 , 255 , Opacity)
+        surface.DrawTexturedRectRotated(0, 0, 33.8, 33, 0)
+    cam.End3D2D()
+
+    cam.Start3D2D( self:LocalToWorld( Vector( -613.53,-239.71,58.69 ) ), self:LocalToWorldAngles( Angle( -90, 0, 0 ) ), 1)
+        draw.NoTexture()
+        surface.SetDrawColor( 255, 255 , 255 , Opacity)
+        surface.DrawTexturedRectRotated(0, 0, 33.8, 33, 0)
     cam.End3D2D()
 end
 
