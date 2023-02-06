@@ -11,7 +11,7 @@ function ENT:OnSpawn()
     self:RegisterTrail( Vector(-637.74, -295.15, 60.08), 0, 20, 2, 1000, 150)
     self:RegisterTrail( Vector(-637.74, 295.15, 60.08), 0, 20, 2, 1000, 150)
 end
-
+-- test
 function ENT:PostDraw()
     if not self:GetEngineActive() then return end
 
