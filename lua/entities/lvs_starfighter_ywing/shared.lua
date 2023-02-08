@@ -9,7 +9,7 @@ ENT.Category = "[LVS] - Star Wars"
 ENT.Spawnable = true
 ENT.AdminSpawnable = false
 
-ENT.MDL = "models/ywing/ywing_btlb_test.mdl"
+ENT.MDL = "models/ywing/BTL-B_Y-Wing.mdl"
 
 ENT.GibModels = {
 	"models/gibs/helicopter_brokenpiece_01.mdl",
@@ -41,6 +41,10 @@ ENT.ForceAngleDampingMultiplier = 1
 
 ENT.MaxHealth = 400
 ENT.MaxShield = 100
+
+function ENT:OnSetupDataTables()
+	self:AddDT( "Entity", "TailGunnerSeat")
+end
 
 function ENT:InitWeapons()
     self.FirePositions = {
