@@ -43,7 +43,7 @@ ENT.MaxHealth = 400
 ENT.MaxShield = 100
 
 function ENT:OnSetupDataTables()
-	self:AddDT( "Entity", "TailGunnerSeat")
+	self:AddDT( "Entity", "TopGunnerSeat")
 end
 
 function ENT:InitWeapons()
@@ -167,6 +167,40 @@ function ENT:InitWeapons()
 	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
 	weapon.OnOverheat = function( ent ) ent:EmitSound("lvs/overheat.wav") end
 	self:AddWeapon( weapon )
+
+	local weapon = {}
+	weapon.Icon = Material("lvs/weapons/hmg.png")
+	weapon.Delay = 0.1
+	weapon.Attack = function( ent )
+		local pod = ent:GetDriverSeat()
+
+		if not IsValid( pod ) then return end
+
+		local dir = ent:GetAimVector()
+
+		local trace = ent:GetEyeTrace()
+
+		local veh = ent:GetVehicle()
+
+		veh.GunnerSND:PlayOnce( 100 + math.Rand(-3, 3), 1)
+
+		local bullet = {}
+		bullet.Src = veh:LocalToWorld( Vector(204.86, 0.39, 115.4) )
+		bullet.Dir = (trace.HitPos - bullet.Src):GetNormalized()
+		bullet.Spread = Vector(0.03, 0.03, 0.03)
+		bullet.TracerName = "lvs_laser_blue_long"
+		bullet.Force = 10
+		bullet.HullSize = 25
+		bullet.Damage = 45
+		bullet.Velocity = 30000
+		bullet.Attacker = ent:GetDriver()
+		
+		ent:LVSFireBullet( bullet )
+	end
+	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
+	weapon.OnOverheat = function( ent ) ent:EmitSound("lvs/overheat.wav") end
+
+	self:AddWeapon( weapon, 2)
 end
 
 ENT.FlyByAdvance = 0.5
