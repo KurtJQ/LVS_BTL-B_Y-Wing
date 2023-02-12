@@ -53,13 +53,6 @@ function ENT:EngineEffects()
 	end
 end
 
-function ENT:AnimGunner()
-    local Pod = self:GetTopGunnerSeat()
-
-    if not IsValid( Pod ) then return end
-
-end
-
 function ENT:PostDraw()
     if not self:GetEngineActive() then return end
 

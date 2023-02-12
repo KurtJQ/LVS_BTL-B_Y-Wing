@@ -46,6 +46,36 @@ function ENT:OnSetupDataTables()
 	self:AddDT( "Entity", "TopGunnerSeat")
 end
 
+function ENT:SetPoseParameterTopGun( weapon )
+    if not IsValid( weapon:GetDriver() ) and not weapon:GetAI() then return end
+
+    local AimAng = weapon:WorldToLocal( weapon:GetPos() + weapon:GetAimVector() ):Angle()
+    AimAng:Normalize()
+
+    self:SetPoseParameter("gunner_seat", AimAng.y)
+	self:SetPoseParameter("turrets", -AimAng.p)
+end
+
+function ENT:TraceGunner()
+	local IDL = self:LookupAttachment("turret_muzzle_L")
+	local IDR = self:LookupAttachment("turret_muzzle_R")
+	local MuzzleL = self:GetAttachment( IDL )
+	local MuzzleR = self:GetAttachment( IDR )
+
+	if not MuzzleL then return end
+	if not MuzzleR then return end
+
+	local dir = -MuzzleL.Ang:Up()
+	local pos = MuzzleL.Pos
+
+	local trace = util.TraceLine( {
+		start = pos,
+		endpos = (pos + dir * 50000),
+	} )
+
+	return trace
+end
+
 function ENT:InitWeapons()
     self.FirePositions = {
         Vector(517.48,-22.81,45.25),
@@ -168,37 +198,78 @@ function ENT:InitWeapons()
 	weapon.OnOverheat = function( ent ) ent:EmitSound("lvs/overheat.wav") end
 	self:AddWeapon( weapon )
 
+	local COLOR_WHITE = Color(255,255,255,255)
+
 	local weapon = {}
 	weapon.Icon = Material("lvs/weapons/hmg.png")
-	weapon.Delay = 0.1
+	weapon.Delay = 0.2
 	weapon.Attack = function( ent )
 		local pod = ent:GetDriverSeat()
 
 		if not IsValid( pod ) then return end
 
-		local dir = ent:GetAimVector()
+		local IDL = self:LookupAttachment( "turret_muzzle_L" )
+		local IDR = self:LookupAttachment( "turret_muzzle_R" )
+		local MuzzleL = self:GetAttachment( IDL )
+		local MuzzleR = self:GetAttachment( IDR )
 
-		local trace = ent:GetEyeTrace()
+		if not MuzzleL then return end
+		if not MuzzleR then return end
 
 		local veh = ent:GetVehicle()
 
 		veh.GunnerSND:PlayOnce( 100 + math.Rand(-3, 3), 1)
 
+		ent.SwapLeftRight = not ent.SwapLeftRight
+
 		local bullet = {}
-		bullet.Src = veh:LocalToWorld( Vector(204.86, 0.39, 115.4) )
-		bullet.Dir = (trace.HitPos - bullet.Src):GetNormalized()
-		bullet.Spread = Vector(0.03, 0.03, 0.03)
-		bullet.TracerName = "lvs_laser_blue_long"
+		bullet.Src = ent.SwapLeftRight and MuzzleL.Pos or MuzzleR.Pos
+		bullet.Dir = -MuzzleL.Ang:Up()
+		bullet.Spread = Vector(0, 0, 0)
+		bullet.TracerName = "lvs_laser_blue"
 		bullet.Force = 10
 		bullet.HullSize = 25
-		bullet.Damage = 45
+		bullet.Damage = 50
 		bullet.Velocity = 30000
 		bullet.Attacker = ent:GetDriver()
+		bullet.Callback = function(att, tr, dmginfo)
+			local effectdata = EffectData()
+				effectdata:SetStart( Vector(0 ,0 ,255) )
+				effectdata:SetOrigin( tr.HitPos )
+			util.Effect( "lvs_laser_explosion", effectdata )
+		end
 		
 		ent:LVSFireBullet( bullet )
+
+		local effectdata = EffectData()
+		effectdata:SetStart( Vector(0 , 0, 255) )
+		effectdata:SetOrigin( bullet.Src )
+		effectdata:SetNormal( ent:GetForward() )
+		effectdata:SetEntity( ent )
+		util.Effect( "lvs_muzzle_colorable", effectdata )
+	end
+
+	weapon.OnThink = function( ent, active)
+		local base = ent:GetVehicle()
+
+		if not IsValid ( base ) then return end
+
+		base:SetPoseParameterTopGun( ent )
 	end
 	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
 	weapon.OnOverheat = function( ent ) ent:EmitSound("lvs/overheat.wav") end
+
+	weapon.HudPaint = function( ent, X, Y, ply )
+		local base = ent:GetVehicle()
+
+		if not IsValid( base ) then return end
+
+		local Pos2D = base:TraceGunner().HitPos:ToScreen()
+		
+		base:PaintCrosshairCenter( Pos2D, COLOR_WHITE )
+		base:PaintCrosshairOuter( Pos2D, COLOR_WHITE )
+		base:LVSPaintHitMarker( Pos2D )
+	end
 
 	self:AddWeapon( weapon, 2)
 end
