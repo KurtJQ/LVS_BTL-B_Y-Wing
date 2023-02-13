@@ -101,7 +101,7 @@ function ENT:DrawDriverTopGunner()
 
 
     local ID = self:LookupAttachment( "turret_muzzle_L" )
-    local Muzzle = self:GetAttachment( ID ) 
+    local Muzzle = self:GetAttachment( ID )
 
     if not Muzzle then return end
 

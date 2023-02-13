@@ -47,12 +47,12 @@ function ENT:OnSetupDataTables()
 end
 
 function ENT:SetPoseParameterTopGun( weapon )
-    if not IsValid( weapon:GetDriver() ) and not weapon:GetAI() then return end
+	if not IsValid( weapon:GetDriver() ) and not weapon:GetAI() then return end
 
-    local AimAng = weapon:WorldToLocal( weapon:GetPos() + weapon:GetAimVector() ):Angle()
-    AimAng:Normalize()
+	local AimAng = weapon:WorldToLocal( weapon:GetPos() + weapon:GetAimVector() ):Angle()
+	AimAng:Normalize()
 
-    self:SetPoseParameter("gunner_seat", AimAng.y)
+	self:SetPoseParameter("gunner_seat", AimAng.y)
 	self:SetPoseParameter("turrets", -AimAng.p)
 end
 
@@ -70,21 +70,21 @@ function ENT:TraceGunner()
 
 	local trace = util.TraceLine( {
 		start = pos,
-		endpos = (pos + dir * 50000),
+		endpos = pos + dir * 50000,
 	} )
 
 	return trace
 end
 
 function ENT:InitWeapons()
-    self.FirePositions = {
-        Vector(517.48,-22.81,45.25),
-        Vector(517.48,22.64,45.24)
-    }
+	self.FirePositions = {
+		Vector(517.48,-22.81,45.25),
+		Vector(517.48,22.64,45.24)
+	}
 
-    local weapon = {}
-    weapon.Icon = Material("lvs/weapons/mg.png")
-    weapon.Ammo = 1200
+	local weapon = {}
+	weapon.Icon = Material("lvs/weapons/mg.png")
+	weapon.Ammo = 1200
 	weapon.Delay = 0.1
 	weapon.HeatRateUp = 0.25
 	weapon.HeatRateDown = 0.25
@@ -157,7 +157,7 @@ function ENT:InitWeapons()
 		ent._nextMIssle = T + 0.5
 
 		ent._swapMissile = not ent._swapMissile
-		
+
 		local Pos = Vector( 535, ent._swapMissile and -22.81 or 22.81, 46.04)
 
 		local Driver = self:GetDriver()
@@ -238,7 +238,7 @@ function ENT:InitWeapons()
 				effectdata:SetOrigin( tr.HitPos )
 			util.Effect( "lvs_laser_explosion", effectdata )
 		end
-		
+
 		ent:LVSFireBullet( bullet )
 
 		local effectdata = EffectData()
@@ -279,7 +279,7 @@ function ENT:InitWeapons()
 		if not IsValid( base ) then return end
 
 		local Pos2D = base:TraceGunner().HitPos:ToScreen()
-		
+
 		base:PaintCrosshairCenter( Pos2D, COLOR_WHITE )
 		base:PaintCrosshairOuter( Pos2D, COLOR_WHITE )
 		base:LVSPaintHitMarker( Pos2D )

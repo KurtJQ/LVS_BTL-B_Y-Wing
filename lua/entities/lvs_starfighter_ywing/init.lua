@@ -8,7 +8,8 @@ ENT.SpawnNormalOffset = 100
 function ENT:OnSpawn( PObj )
     PObj:SetMass( 1000 )
 
-    self:AddDriverSeat( Vector(305 ,0 , 60), Angle(0,-90 ,0) )
+    local DriverSeat = self:AddDriverSeat( Vector(305 ,0 , 60), Angle(0,-90 ,0) )
+    DriverSeat:SetCameraDistance(1)
 
     local Pod = self:AddPassengerSeat( Vector(256, 0, 88), Angle(0, 90, 0))
     Pod.HidePlayer = true
