@@ -18,6 +18,12 @@ function ENT:OnFrame()
     self:PredictPoseParameters()
 end
 
+function ENT:PreDraw()
+    self:DrawDriverTopGunner()
+
+    return true
+end
+
 function ENT:EngineEffects()
     if not self:GetEngineActive() then return end
 
@@ -81,6 +87,35 @@ function ENT:PostDrawTranslucent()
     for _, pos in pairs( self.EnginePos ) do
         render.DrawSprite( self:LocalToWorld( pos ), Size, Size, self.EngineColor)
     end
+end
+
+function ENT:DrawDriverTopGunner()
+    local pod = self:GetTopGunnerSeat()
+
+    if not IsValid( pod ) then return end
+
+    local plyL = LocalPlayer()
+    local ply = pod:GetDriver()
+
+    if not IsValid( ply ) or (ply == plyL and plyL:GetViewEntity() == plyL and not pod:GetThirdPersonMode()) then return end
+
+
+    local ID = self:LookupAttachment( "turret_muzzle_L" )
+    local Muzzle = self:GetAttachment( ID ) 
+
+    if not Muzzle then return end
+
+    local _,Ang = LocalToWorld( Vector(0, 0, 0), Angle(90, 0, 0), Muzzle.Pos, Muzzle.Ang)
+
+    local LAng = self:WorldToLocalAngles( Ang )
+
+    LAng.p = 0
+    LAng.r = 0
+
+
+    ply:SetSequence( "sit_rollercoaster" )
+    ply:SetRenderAngles( self:LocalToWorldAngles( LAng ) )
+    ply:DrawModel()
 end
 
 function ENT:OnStartBoost()
