@@ -3,7 +3,7 @@ ENT.Base = "lvs_base_starfighter"
 
 ENT.PrintName = "Y-Wing"
 ENT.Author = "KurtJQ"
-ENT.Information = "BTL Y-Wing Starfighter of the Republic"
+ENT.Information = "BTL-B Y-Wing Starfighter of the Republic"
 ENT.Category = "[LVS] - Star Wars"
 
 ENT.Spawnable = true
