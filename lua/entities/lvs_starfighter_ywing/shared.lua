@@ -259,6 +259,20 @@ function ENT:InitWeapons()
 	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
 	weapon.OnOverheat = function( ent ) ent:EmitSound("lvs/overheat.wav") end
 
+	weapon.CalcView = function( ent, ply, pos, angle, fov, pod)
+		local base = ent:GetVehicle()
+
+		if not IsValid( base ) then
+			return LVS:CalcView( ent, ply, pos, angle, fov, pod )
+		end
+
+		if pod:GetThirdPersonMode() then
+			pos = pos + (ent:GetUp() * 20)
+		end
+
+		return LVS:CalcView( ent, ply, pos, angle, fov, pod )
+	end
+
 	weapon.HudPaint = function( ent, X, Y, ply )
 		local base = ent:GetVehicle()
 
