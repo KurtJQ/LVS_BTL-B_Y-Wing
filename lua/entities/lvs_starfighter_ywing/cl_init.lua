@@ -1,4 +1,5 @@
-include("shared.lua")
+include( "shared.lua" )
+include( "cl_prediction.lua" )
 
 ENT.EngineColor = Color( 255, 0, 0 , 255)
 ENT.EngineGlow = Material( "sprites/light_glow02_add" )
@@ -14,6 +15,7 @@ end
 
 function ENT:OnFrame()
     self:EngineEffects()
+    self:PredictPoseParameters()
 end
 
 function ENT:EngineEffects()
@@ -24,8 +26,6 @@ function ENT:EngineEffects()
     if (self.nextEFX or 0) > T then return end
 
     self.nextEFX = T + 0.1
-
-    local THR = self:GetThrottle()
 
     local emitter = self:GetParticleEmitter( self:GetPos() )
 
@@ -39,18 +39,18 @@ function ENT:EngineEffects()
 
         local particle = emitter:Add( "effects/muzzleflash2", vOffset )
 
-		if not particle then continue end
+        if not particle then continue end
 
-		particle:SetVelocity( vNormal * (math.Rand(500,1000) + self:GetBoost() * 10) + self:GetVelocity() )
-		particle:SetLifeTime( 0 )
-		particle:SetDieTime( 0.1 )
-		particle:SetStartAlpha( 255 )
-		particle:SetEndAlpha( 0 )
-		particle:SetStartSize( math.Rand(50,100) )
-		particle:SetEndSize( math.Rand(10,25) )
-		particle:SetRoll( math.Rand(-1,1) * 100 )
-		particle:SetColor( 255, 50, 0 )
-	end
+        particle:SetVelocity( vNormal * (math.Rand(500,1000) + self:GetBoost() * 10) + self:GetVelocity() )
+        particle:SetLifeTime( 0 )
+        particle:SetDieTime( 0.1 )
+        particle:SetStartAlpha( 255 )
+        particle:SetEndAlpha( 0 )
+        particle:SetStartSize( math.Rand(50,100) )
+        particle:SetEndSize( math.Rand(10,25) )
+        particle:SetRoll( math.Rand(-1,1) * 100 )
+        particle:SetColor( 255, 50, 0 )
+    end
 end
 
 function ENT:PostDraw()
