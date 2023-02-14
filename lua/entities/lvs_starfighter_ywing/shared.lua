@@ -152,6 +152,16 @@ function ENT:InitWeapons()
 
 		local T = CurTime()
 
+		if IsValid( ent._ProtonTorpedo ) then
+			if (ent._nextMissleTracking or 0) > T then return end
+
+			ent._nextMissleTracking = T + 0.1
+
+			ent._ProtonTorpedo:FindTarget( ent:GetPos(), ent:GetForward(), 30, 7500 )
+
+			return
+		end
+
 		if (ent._nextMissle or 0) > T then return end
 
 		ent._nextMIssle = T + 0.5
