@@ -24,8 +24,8 @@ ENT.GibModels = {
 
 ENT.AITEAM = 2
 
-ENT.MaxVelocity = 2150
-ENT.MaxThrust = 2150
+ENT.MaxVelocity = 2350
+ENT.MaxThrust = 2350
 
 ENT.ThrustVtol = 55
 ENT.ThrustRateVtol = 3
@@ -207,6 +207,34 @@ function ENT:InitWeapons()
 	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
 	weapon.OnOverheat = function( ent ) ent:EmitSound("lvs/overheat.wav") end
 	self:AddWeapon( weapon )
+
+
+
+	local weapon = {}
+	weapon.Icon = Material( "lvs/weapons/bomb.png" )
+	weapon.Ammo = 20
+	weapon.HeatRateUp = 0.4
+	weapon.HeatRateDown = 0.1
+	weapon.Delay = 0.5
+	weapon.Attack = function( ent )
+		local Driver = ent:GetDriver()
+
+		local projectile = ents.Create( "lvs_protonbomb" )
+		projectile:SetPos( ent:LocalToWorld( Vector(-135, 0, -10) ) )
+		projectile:SetAngles( ent:GetAngles() )
+		projectile:SetOwner( ent )
+		projectile:SetAttacker( IsValid( Driver ) and Driver or ent)
+		projectile:SetParent( ent )
+		projectile:Spawn()
+		projectile:Activate()
+		projectile:Drop()
+
+		ent:TakeAmmo()
+	end
+	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
+	self:AddWeapon(weapon)
+
+
 
 	local COLOR_WHITE = Color(255,255,255,255)
 
