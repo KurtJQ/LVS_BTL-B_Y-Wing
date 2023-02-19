@@ -77,6 +77,8 @@ function ENT:TraceGunner()
 end
 
 function ENT:InitWeapons()
+	local COLOR_WHITE = Color(255,255,255,255)
+
 	self.FirePositions = {
 		Vector(517.48,-22.81,45.25),
 		Vector(517.48,22.64,45.24)
@@ -232,11 +234,8 @@ function ENT:InitWeapons()
 		ent:TakeAmmo()
 	end
 	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
+
 	self:AddWeapon(weapon)
-
-
-
-	local COLOR_WHITE = Color(255,255,255,255)
 
 	local weapon = {}
 	weapon.Icon = Material("lvs/weapons/hmg.png")

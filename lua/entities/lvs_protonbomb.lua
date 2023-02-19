@@ -28,6 +28,7 @@ if SERVER then
 
 		PhysObj:EnableDrag( true )
 		PhysObj:EnableGravity( false )
+		PhysObj:SetMass( 2500 )
 
 		self:PhysWake()
 	end
@@ -70,7 +71,7 @@ if SERVER then
 	end
 
 	function ENT:PhysicsCollide( data, physobj )
-		if data.Speed > 300 then
+		if data.Speed > 1000 then
 			self:Detonate()
 		end
 	end
