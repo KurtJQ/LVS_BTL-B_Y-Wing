@@ -18,7 +18,7 @@ if SERVER then
 	function ENT:GetAttacker() return self.attacker or NULL end
 
 	function ENT:Initialize()
-		self:SetModel( "models/props_phx/ww2bomb.mdl" )
+		self:SetModel( "models/kurt/protonbombs/protonbombs.mdl" )
 		self:SetMoveType( MOVETYPE_VPHYSICS )
 		self:PhysicsInit( SOLID_VPHYSICS )
 
@@ -26,7 +26,6 @@ if SERVER then
 
 		local PhysObj = self:GetPhysicsObject()
 
-		PhysObj:SetMass( 1000 )
 		PhysObj:EnableDrag( true )
 		PhysObj:EnableGravity( false )
 
