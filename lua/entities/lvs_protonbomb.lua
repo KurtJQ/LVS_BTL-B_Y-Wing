@@ -1,102 +1,62 @@
 AddCSLuaFile()
 
+ENT.Base = "lvs_bomb"
+
 ENT.Type = "anim"
 
 ENT.PrintName = "Proton Bomb"
 ENT.Author = "KurtJQ"
-ENT.Description = "LVS Proton Bomb"
+ENT.Information = "LVS Proton Bomb"
 ENT.Category = "[LVS]"
 
-ENT.ExplosionEffect = "lvs_explosion"
+ENT.Spawnable = false
+ENT.AdminOnly = false
 
-function ENT:SetupDataTables()
-	self:NetworkVar( "Bool", 0, "Active" )
-end
+ENT.ExplosionEffect = "lvs_proton_explosion"
+ENT.GlowColor = Color( 0, 127, 255, 255 )
 
 if SERVER then
-	function ENT:SetAttacker( ent ) self._attacker = ent end
-	function ENT:GetAttacker() return self.attacker or NULL end
-
-	function ENT:Initialize()
-		self:SetModel( "models/kurt/protonbombs/protonbombs.mdl" )
-		self:SetMoveType( MOVETYPE_VPHYSICS )
-		self:PhysicsInit( SOLID_VPHYSICS )
-
-		self.DieTime = CurTime() + 30
-
-		local PhysObj = self:GetPhysicsObject()
-
-		PhysObj:EnableDrag( true )
-		PhysObj:EnableGravity( false )
-		PhysObj:SetMass( 2500 )
-
-		self:PhysWake()
+	function ENT:GetDamage() return
+		(self._dmg or 2000)
 	end
 
-	function ENT:Drop()
-		local vehicle = self:GetParent()
-
-		local PhysObj = self:GetPhysicsObject()
-
-		if not IsValid( vehicle ) or not IsValid( PhysObj ) then return end
-
-		self:SetParent( NULL )
-
-		PhysObj:SetVelocityInstantaneous( vehicle:GetVelocity() )
-
-		timer.Simple(0.1, function()
-			if not IsValid( self ) or not IsValid( PhysObj ) then return end
-
-			self:SetActive( true )
-			PhysObj:EnableGravity( true )
-		end )
+	function ENT:GetRadius() return
+		(self._radius or 400)
 	end
 
-	function ENT:OnTakeDamage( dmginfo )
-		self:Detonate()
-	end
+	return
+end
 
-	function ENT:Think()
-		local T = CurTime()
+ENT.GlowMat = Material( "sprites/light_glow02_add" )
 
-		self:NextThink( T + 0.5 )
+function ENT:Initialize()
+	self:SetModel( "models/weapons/w_missile_launch.mdl" )
+end
 
-		if self.DieTime < T then
-			self:Detonate()
-		end
-	end
+function ENT:Enable()
+	if self.IsEnabled then return end
 
-	function ENT:UpdateTransmitState()
-		return TRANSMIT_ALWAYS
-	end
+	self.IsEnabled = true
 
-	function ENT:PhysicsCollide( data, physobj )
-		if data.Speed > 1000 then
-			self:Detonate()
-		end
-	end
-
-	function ENT:Detonate()
-		if self.IsDetonated then return end
-
-		self.IsDetonated = true
-
-		local Pos = self:GetPos()
-
-		local effectdata = EffectData()
-		effectdata:SetOrigin( Pos )
-		util.Effect (self.ExplosionEffect, effectdata)
-
-		local attacker = self:GetAttacker()
-
-		util.BlastDamage( self, IsValid( attacker) and attacker or game.GetWorld(), Pos, 500, 250)
-
-		SafeRemoveEntityDelayed( self, FrameTime() )
-	end
+	local effectdata = EffectData()
+		effectdata:SetOrigin( self:GetPos() )
+		effectdata:SetEntity( self )
+	util.Effect( "lvs_proton_trail", effectdata)
 end
 
 function ENT:Draw()
 	if not self:GetActive() then return end
 
 	self:DrawModel()
+
+	render.SetMaterial( self.GlowMat )
+
+	local pos = self:GetPos()
+	local dir = self:GetForward()
+
+	for i = 0, 30 do
+		local Size = ((30 - i) / 30) ^ 2 * 128
+
+		render.DrawSprite( pos - dir * i * 7, Size, Size, self.GlowColor )
+	end
 end

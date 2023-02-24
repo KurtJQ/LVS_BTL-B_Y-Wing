@@ -189,7 +189,7 @@ function ENT:InitWeapons()
 		ent:SetNextAttack( CurTime() + 0.1 )
 	end
 	weapon.FinishAttack = function( ent )
-		if not IsValid( ent._ProtonTorpedo) then return end
+		if not IsValid( ent._ProtonTorpedo ) then return end
 
 		local projectile = ent._ProtonTorpedo
 
@@ -210,39 +210,39 @@ function ENT:InitWeapons()
 	weapon.OnOverheat = function( ent ) ent:EmitSound("lvs/overheat.wav") end
 	self:AddWeapon( weapon )
 
-
-
 	local weapon = {}
 	weapon.Icon = Material( "lvs/weapons/bomb.png" )
 	weapon.Ammo = 999
-	weapon.HeatRateUp = 0
-	weapon.HeatRateDown = 0
-	weapon.Delay = 0.5
-	weapon.Attack = function( ent )
-		if not IsValid( self._ProtonBomb ) then return end
+	weapon.HeatRateUp = -0.5
+	weapon.HeatRateDown = 0.1
+	weapon.StartAttack = function( ent )
+		local Driver = ent:GetDriver()
 
-		self._ProtonBomb:SetSpeed( ent:GetVelocity() )
-	end
-	weapon.StartAttack = function ( ent )
-		local Driver = self:GetDriver()
+		local bomb = ents.Create( "lvs_protonbomb" )
+		bomb:SetPos( ent:LocalToWorld( Vector( -135, 0, -10) ) )
+		bomb:SetAngles( ent:GetAngles() )
+		bomb:SetParent( ent )
+		bomb:Spawn()
+		bomb:Activate()
+		bomb:SetAttacker( IsValid( Driver ) and Driver or self )
+		bomb:SetSpeed( ent:GetVelocity() )
 
-		local projectile = ents.Create( "lvs_bomb" )
-		projectile:SetPos( ent:LocalToWorld( Vector( -135, 0, -10 ) ) )
-		projectile:SetAngles( ent:GetAngles() )
-		projectile:SetParent( ent )
-		projectile:Spawn()
-		projectile:Activate()
-		projectile:SetModel( "models/kurt/protonbombs/protonbombs.mdl" )
-		projectile:SetSpeed( ent:GetVelocity() )
-		projectile:SetAttacker( IsValid( Driver ) and Driver or ent )
-		projectile:SetEntityFilter( ent:GetCrosshairFilterEnts() )
-
-		self._ProtonBomb = projectile
+		ent._ProtonBomb = bomb
 	end
 	weapon.FinishAttack = function( ent )
-		if not IsValid( self._ProtonBomb ) then return end
+		if not IsValid ( ent._ProtonBomb ) then return end
+		
+		local bomb = ent._ProtonBomb
+		bomb:Enable()
+		ent:TakeAmmo()
 
-		ent._ProtonBomb:Enable()
+		ent._ProtonBomb = nil
+	end
+	weapon.OnThink = function( ent )
+		if not IsValid( ent._ProtonBomb ) then return end
+
+		local bomb = ent._ProtonBomb
+		bomb:SetSpeed( ent:GetVelocity() )
 	end
 	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
 
