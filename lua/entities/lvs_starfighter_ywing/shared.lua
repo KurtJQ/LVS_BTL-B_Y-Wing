@@ -231,7 +231,7 @@ function ENT:InitWeapons()
 	end
 	weapon.FinishAttack = function( ent )
 		if not IsValid ( ent._ProtonBomb ) then return end
-		
+
 		local bomb = ent._ProtonBomb
 		bomb:Enable()
 		ent:TakeAmmo()
