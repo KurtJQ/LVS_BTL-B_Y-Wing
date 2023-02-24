@@ -214,24 +214,35 @@ function ENT:InitWeapons()
 
 	local weapon = {}
 	weapon.Icon = Material( "lvs/weapons/bomb.png" )
-	weapon.Ammo = 20
-	weapon.HeatRateUp = 0.4
-	weapon.HeatRateDown = 0.1
+	weapon.Ammo = 999
+	weapon.HeatRateUp = 0
+	weapon.HeatRateDown = 0
 	weapon.Delay = 0.5
 	weapon.Attack = function( ent )
-		local Driver = ent:GetDriver()
+		if not IsValid( self._ProtonBomb ) then return end
 
-		local projectile = ents.Create( "lvs_protonbomb" )
-		projectile:SetPos( ent:LocalToWorld( Vector(-135, 0, -10) ) )
+		self._ProtonBomb:SetSpeed( ent:GetVelocity() )
+	end
+	weapon.StartAttack = function ( ent )
+		local Driver = self:GetDriver()
+
+		local projectile = ents.Create( "lvs_bomb" )
+		projectile:SetPos( ent:LocalToWorld( Vector( -135, 0, -10 ) ) )
 		projectile:SetAngles( ent:GetAngles() )
-		projectile:SetOwner( ent )
-		projectile:SetAttacker( IsValid( Driver ) and Driver or ent)
 		projectile:SetParent( ent )
 		projectile:Spawn()
 		projectile:Activate()
-		projectile:Drop()
+		projectile:SetModel( "models/kurt/protonbombs/protonbombs.mdl" )
+		projectile:SetSpeed( ent:GetVelocity() )
+		projectile:SetAttacker( IsValid( Driver ) and Driver or ent )
+		projectile:SetEntityFilter( ent:GetCrosshairFilterEnts() )
 
-		ent:TakeAmmo()
+		self._ProtonBomb = projectile
+	end
+	weapon.FinishAttack = function( ent )
+		if not IsValid( self._ProtonBomb ) then return end
+
+		ent._ProtonBomb:Enable()
 	end
 	weapon.OnSelect = function( ent ) ent:EmitSound("physics/metal/weapon_impact_soft3.wav") end
 
